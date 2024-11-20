@@ -3,180 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxmox Server Task Manager</title>
+    <title>Proxmox VM Tasks</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            padding: 20px;
             background-color: #f4f4f9;
             margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
         }
         .container {
-            padding: 20px;
-        }
-        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .form-container h3 {
-            margin-top: 0;
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        .input-group label {
-            display: block;
+        .section-title {
+            text-align: center;
             font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
         }
-        .input-group input, .input-group select {
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
             border-radius: 4px;
-        }
-        .input-group svg {
-            width: 24px;
-            height: 24px;
-            fill: #333;
-            margin-right: 10px;
+            border: 1px solid #ccc;
         }
         button {
-            background-color: #5cb85c;
+            background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
+            border-radius: 4px;
+            display: block;
+            width: 100%;
         }
         button:hover {
-            background-color: #4cae4c;
+            background-color: #45a049;
         }
-        .icon-container {
-            display: flex;
-            align-items: center;
-        }
-        .icon-container svg {
-            margin-right: 10px;
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            display: none; /* Hide initially */
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Proxmox Server Task Manager</h1>
-</header>
+    <div class="container">
+        <h1 style="text-align: center; font-size: 36px; font-weight: bold; color: #333;">Proxmox VM Tasks</h1>
 
-<div class="container">
-    <!-- Convert VDI Form -->
-    <div class="form-container">
-        <h3>Convert VDI to VMDK or RAW</h3>
-        <form id="convert-vdi-form">
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M7.5 0A7.5 7.5 0 0 0 0 7.5 7.5 7.5 0 0 0 7.5 15 7.5 7.5 0 0 0 15 7.5 7.5 7.5 0 0 0 7.5 0zM7.5 14A6.998 6.998 0 0 1 1 7.5 6.998 6.998 0 0 1 7.5 1a6.998 6.998 0 0 1 6.5 6.5 6.998 6.998 0 0 1-6.5 6.5z"/><path d="M10.5 7.5a3 3 0 1 0-6 0 3 3 0 0 0 6 0zM7.5 8.5a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
-                    <label for="vdi-file">VDI File Path</label>
-                </div>
-                <input type="text" id="vdi-file" name="vdi-file" placeholder="Enter VDI file path" required>
-            </div>
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h4zm4 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h4z"/></svg>
-                    <label for="output-name">Output File Name</label>
-                </div>
-                <input type="text" id="output-name" name="output-name" placeholder="Enter output file name" required>
-            </div>
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2 2h12v12H2z"/></svg>
-                    <label for="output-format">Output Format (VMDK/RAW)</label>
-                </div>
-                <select id="output-format" name="output-format" required>
-                    <option value="vmdk">VMDK</option>
-                    <option value="raw">RAW</option>
-                </select>
-            </div>
-            <button type="submit">Convert VDI</button>
-        </form>
+        <!-- Convert VDI Section -->
+        <div class="section" id="convert-vdi">
+            <div class="section-title">Convert VDI to VMDK or RAW</div>
+            <form method="POST" action="/convert_vdi">
+                <label for="input-file">Enter the path to the input VDI file:</label>
+                <input type="text" id="input-file" name="input-file" required>
+
+                <label for="output-name">Enter the desired output file name:</label>
+                <input type="text" id="output-name" name="output-name" required>
+
+                <label for="output-format">Enter the output format (vmdk or raw):</label>
+                <input type="text" id="output-format" name="output-format" required>
+
+                <button type="submit">Convert</button>
+            </form>
+        </div>
+
+        <!-- Import Disk Section -->
+        <div class="section" id="import-disk">
+            <div class="section-title">Import Disk to VM</div>
+            <form method="POST" action="/import_disk">
+                <label for="vm-name">Enter the VM ID or Name:</label>
+                <input type="text" id="vm-name" name="vm-name" required>
+
+                <label for="disk-name">Enter the disk image name:</label>
+                <input type="text" id="disk-name" name="disk-name" required>
+
+                <label for="storage-id">Choose Storage:</label>
+                <input type="text" id="storage-id" name="storage-id" required>
+
+                <button type="submit">Import Disk</button>
+            </form>
+        </div>
+
+        <!-- Import OVF Section -->
+        <div class="section" id="import-ovf">
+            <div class="section-title">Import OVF to VM</div>
+            <form method="POST" action="/import_ovf">
+                <label for="vm-id">Enter the VM ID:</label>
+                <input type="text" id="vm-id" name="vm-id" required>
+
+                <label for="ovf-path">Enter the path to the OVF file:</label>
+                <input type="text" id="ovf-path" name="ovf-path" required>
+
+                <label for="vm-name-ovf">Enter the VM name:</label>
+                <input type="text" id="vm-name-ovf" name="vm-name-ovf" required>
+
+                <label for="storage-ovf">Enter the storage name:</label>
+                <input type="text" id="storage-ovf" name="storage-ovf" required>
+
+                <label for="network-bridge">Enter the network bridge:</label>
+                <input type="text" id="network-bridge" name="network-bridge" required>
+
+                <label for="cpu-cores">Enter the number of CPU cores:</label>
+                <input type="number" id="cpu-cores" name="cpu-cores" value="1">
+
+                <label for="memory">Enter the memory size (MB):</label>
+                <input type="number" id="memory" name="memory" value="1024">
+
+                <button type="submit">Import OVF</button>
+            </form>
+        </div>
+
+        <!-- Response Area -->
+        <div class="response" id="response">
+            <!-- Here the result from the Flask app will be shown -->
+        </div>
     </div>
-
-    <!-- Import Disk Form -->
-    <div class="form-container">
-        <h3>Import Disk to VM</h3>
-        <form id="import-disk-form">
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M12 0v4h4V0H12zm-1 1H5v5H4V1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v5H9V1H8zm1 4h1V2H9v3z"/></svg>
-                    <label for="vm-name">VM ID/Name</label>
-                </div>
-                <input type="text" id="vm-name" name="vm-name" placeholder="Enter VM ID or Name" required>
-            </div>
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0l2 4H6L8 0zM6 5h4v7H6z"/></svg>
-                    <label for="disk-name">Disk Image Name</label>
-                </div>
-                <input type="text" id="disk-name" name="disk-name" placeholder="Enter disk image name" required>
-            </div>
-            <div class="input-group">
-                <label for="storage-id">Storage ID</label>
-                <input type="text" id="storage-id" name="storage-id" placeholder="Enter storage ID" required>
-            </div>
-            <button type="submit">Import Disk</button>
-        </form>
-    </div>
-
-    <!-- Import OVF Form -->
-    <div class="form-container">
-        <h3>Import OVF to VM</h3>
-        <form id="import-ovf-form">
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3 9h10V7H3z"/></svg>
-                    <label for="ovf-file">OVF File Path</label>
-                </div>
-                <input type="text" id="ovf-file" name="ovf-file" placeholder="Enter OVF file path" required>
-            </div>
-            <div class="input-group">
-                <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4 0h8v16H4z"/></svg>
-                    <label for="vm-id">VM ID</label>
-                </div>
-                <input type="text" id="vm-id" name="vm-id" placeholder="Enter VM ID" required>
-            </div>
-            <button type="submit">Import OVF</button>
-        </form>
-    </div>
-</div>
-
-<script>
-    document.getElementById('convert-vdi-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        alert('Conversion task triggered.');
-        // You can use AJAX or fetch API to send form data to the server-side script
-    });
-
-    document.getElementById('import-disk-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        alert('Disk import task triggered.');
-        // Add your logic for disk import here
-    });
-
-    document.getElementById('import-ovf-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        alert('OVF import task triggered.');
-        // Add your logic for OVF import here
-    });
-</script>
 
 </body>
 </html>
